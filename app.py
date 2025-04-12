@@ -4,7 +4,7 @@ import traceback
 
 app = Flask(__name__)
 
-WEBHOOK_URL = "YOUR_DISCORD_WEBHOOK_URL"
+WEBHOOK_URL = "https://discordapp.com/api/webhooks/1360532705644773546/lc5c8r8P_MC-MJRytn7ea7ZaANatkhXlf15_sRYT6Ist5oV5eEM-KtRLUKWYZe0RrgKX"
 
 # Add a root route to handle requests to "/"
 @app.route('/')
