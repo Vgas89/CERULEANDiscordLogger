@@ -26,7 +26,7 @@ def track():
 
     requests.post(WEBHOOK_URL, json={"content": content})
 
-    return redirect("https://yourdomain.com/your-image.jpg")
+    return redirect("https://via.placeholder.com/150")
 
 if __name__ == "__main__":
     app.run(debug=True)
